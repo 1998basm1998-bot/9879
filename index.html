@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>نظام إدارة الشركة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="background-blur blur-1"></div>
+  <div class="background-blur blur-2"></div>
+
+  <div class="app-shell">
+    <header class="topbar glass">
+      <div>
+        <h1>نظام إدارة الشركة</h1>
+        <p>واجهة تشغيل يومية للمشاريع والمواقع والورش</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="ghost-btn" id="exportDataBtn"><i class="fa-solid fa-download"></i><span>تصدير البيانات</span></button>
+        <label class="ghost-btn import-btn">
+          <i class="fa-solid fa-file-import"></i><span>استيراد البيانات</span>
+          <input type="file" id="importFile" accept=".json" hidden>
+        </label>
+      </div>
+    </header>
+
+    <main class="main-grid">
+      <section id="tab-home" class="tab-page active">
+        <div class="hero glass">
+          <div>
+            <span class="badge">لوحة التشغيل</span>
+            <h2>إدارة المشاريع اليومية بشكل مرتب وسلس</h2>
+            <p>واجهة موحدة لمتابعة الأعمال، الحضور، المصروفات، المواد، الورش، الذرعات والتقارير.</p>
+          </div>
+          <div class="hero-stats">
+            <div class="stat-card"><span>المشاريع</span><strong id="kpiProjects">0</strong></div>
+            <div class="stat-card"><span>الأعمال اليومية</span><strong id="kpiDailyWorks">0</strong></div>
+            <div class="stat-card"><span>الحضور</span><strong id="kpiAttendance">0</strong></div>
+            <div class="stat-card"><span>المواد المطلوبة</span><strong id="kpiNeededMaterials">0</strong></div>
+          </div>
+        </div>
+
+        <div class="cards-grid">
+          <article class="dashboard-card glass">
+            <div class="card-head"><i class="fa-solid fa-sack-dollar"></i><h3>الملخص المالي</h3></div>
+            <div class="summary-list">
+              <div><span>إجمالي الواردات</span><strong id="sumIncome">0</strong></div>
+              <div><span>إجمالي الرواتب</span><strong id="sumWages">0</strong></div>
+              <div><span>إجمالي المصروفات</span><strong id="sumExpenses">0</strong></div>
+              <div><span>الرصيد التقديري</span><strong id="sumBalance">0</strong></div>
+            </div>
+          </article>
+
+          <article class="dashboard-card glass">
+            <div class="card-head"><i class="fa-solid fa-list-check"></i><h3>أقسام النظام</h3></div>
+            <div class="chips">
+              <span>المشاريع</span>
+              <span>الأعمال اليومية</span>
+              <span>الحضور</span>
+              <span>المالية</span>
+              <span>المواد</span>
+              <span>الموقع</span>
+              <span>الورش</span>
+              <span>الذرعات</span>
+              <span>التقارير</span>
+            </div>
+          </article>
+
+          <article class="dashboard-card glass full-span">
+            <div class="card-head"><i class="fa-solid fa-clock-rotate-left"></i><h3>آخر الأعمال اليومية</h3></div>
+            <div class="table-wrap compact">
+              <table>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>نوع العمل</th>
+                    <th>الجهة / الشخص</th>
+                    <th>المبلغ</th>
+                  </tr>
+                </thead>
+                <tbody id="latestWorksBody"></tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="tab-projects" class="tab-page">
+        <div class="section-head glass">
+          <div><h2>المشاريع والمواقع</h2><p>إضافة ومتابعة المشاريع والمواقع والورش</p></div>
+        </div>
+        <div class="content-grid two-cols">
+          <form class="glass form-card" id="projectForm">
+            <h3>إضافة مشروع / موقع</h3>
+            <div class="form-grid">
+              <div class="field"><label>اسم المشروع</label><input name="name" required></div>
+              <div class="field"><label>النوع</label><select name="type"><option>مشروع</option><option>موقع</option><option>ورشة</option></select></div>
+              <div class="field"><label>الرصيد الحالي</label><input name="balance" type="number" step="0.01"></div>
+              <div class="field"><label>الحالة</label><select name="status"><option>فعال</option><option>قيد التنفيذ</option><option>متوقف</option><option>مكتمل</option></select></div>
+              <div class="field full"><label>ملاحظات</label><textarea name="notes"></textarea></div>
+            </div>
+            <button class="primary-btn" type="submit"><i class="fa-solid fa-plus"></i> حفظ المشروع</button>
+          </form>
+          <div class="glass table-card">
+            <div class="table-toolbar"><input id="projectSearch" placeholder="بحث عن مشروع..."></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>#</th><th>الاسم</th><th>النوع</th><th>الرصيد</th><th>الحالة</th><th>إجراء</th></tr></thead>
+                <tbody id="projectsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-daily" class="tab-page">
+        <div class="section-head glass"><div><h2>الأعمال اليومية</h2><p>تسجيل الأعمال والواردات اليومية</p></div></div>
+        <div class="content-grid two-cols">
+          <form class="glass form-card" id="dailyWorkForm">
+            <h3>إضافة عمل يومي</h3>
+            <div class="form-grid">
+              <div class="field"><label>التاريخ</label><input name="date" type="date"></div>
+              <div class="field"><label>نوع العمل</label><input name="workType" required></div>
+              <div class="field"><label>الجهة / الشخص</label><input name="party"></div>
+              <div class="field"><label>المشروع</label><select name="project"></select></div>
+              <div class="field"><label>المبلغ</label><input name="amount" type="number" step="0.01"></div>
+              <div class="field full"><label>تفاصيل</label><textarea name="details"></textarea></div>
+            </div>
+            <button class="primary-btn" type="submit"><i class="fa-solid fa-floppy-disk"></i> حفظ العمل</button>
+          </form>
+          <div class="glass table-card">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>#</th><th>التاريخ</th><th>نوع العمل</th><th>الجهة</th><th>المشروع</th><th>المبلغ</th><th>إجراء</th></tr></thead>
+                <tbody id="dailyWorksBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-attendance" class="tab-page">
+        <div class="section-head glass"><div><h2>الحضور والأجور</h2><p>متابعة الحضور اليومي والأجور</p></div></div>
+        <div class="content-grid two-cols">
+          <form class="glass form-card" id="attendanceForm">
+            <h3>إضافة حضور</h3>
+            <div class="form-grid">
+              <div class="field"><label>التاريخ</label><input name="date" type="date"></div>
+              <div class="field"><label>الاسم</label><input name="name" required></div>
+              <div class="field"><label>الأجر</label><input name="wage" type="number" step="0.01"></div>
+              <div class="field"><label>الصفة</label><input name="role"></div>
+              <div class="field full"><label>ملاحظات</label><textarea name="notes"></textarea></div>
+            </div>
+            <button class="primary-btn" type="submit"><i class="fa-solid fa-user-plus"></i> حفظ الحضور</button>
+          </form>
+          <div class="glass table-card">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>#</th><th>التاريخ</th><th>الاسم</th><th>الصفة</th><th>الأجر</th><th>إجراء</th></tr></thead>
+                <tbody id="attendanceBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-finance" class="tab-page">
+        <div class="section-head glass"><div><h2>الواردات والمصروفات</h2><p>إدارة مالية يومية مختصرة وواضحة</p></div></div>
+        <div class="content-grid two-cols">
+          <form class="glass form-card" id="financeForm">
+            <h3>إضافة حركة مالية</h3>
+            <div class="form-grid">
+              <div class="field"><label>التاريخ</label><input name="date" type="date"></div>
+              <div class="field"><label>النوع</label><select name="kind"><option>وارد</option><option>مصروف</option><option>راتب</option><option>ثابت</option></select></div>
+              <div class="field"><label>العنوان</label><input name="title" required></div>
+              <div class="field"><label>المبلغ</label><input name="amount" type="number" step="0.01" required></div>
+              <div class="field full"><label>ملاحظات</label><textarea name="notes"></textarea></div>
+            </div>
+            <button class="primary-btn" type="submit"><i class="fa-solid fa-money-bill-wave"></i> حفظ الحركة</button>
+          </form>
+          <div class="glass table-card">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>#</th><th>التاريخ</th><th>النوع</th><th>العنوان</th><th>المبلغ</th><th>إجراء</th></tr></thead>
+                <tbody id="financeBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-materials" class="tab-page">
+        <div class="section-head glass"><div><h2>المواد والتجهيزات</h2><p>المواد المجهزة والمواد المطلوبة لاحقًا</p></div></div>
+        <div class="content-grid two-cols">
+          <form class="glass form-card" id="materialsForm">
+            <h3>إضافة مادة</h3>
+            <div class="form-grid">
+              <div class="field"><label>النوع</label><select name="status"><option>تم تجهيزها</option><option>مطلوبة لاحقًا</option><option>مطلوبة عاجلًا</option></select></div>
+              <div class="field"><label>اسم المادة</label><input name="name" required></div>
+              <div class="field"><label>الكمية</label><input name="qty"></div>
+              <div class="field"><label>المشروع</label><select name="project"></select></div>
+              <div class="field"><label>الأولوية</label><select name="priority"><option>اعتيادي</option><option>مهم</option><option>عاجل</option></select></div>
+              <div class="field full"><label>ملاحظات</label><textarea name="notes"></textarea></div>
+            </div>
+            <button class="primary-btn" type="submit"><i class="fa-solid fa-box-open"></i> حفظ المادة</button>
+          </form>
+          <div class="glass table-card">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>#</th><th>الحالة</th><th>المادة</th><th>الكمية</th><th>المشروع</th><th>الأولوية</th><th>إجراء</th></tr></thead>
+                <tbody id="materialsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-site" class="tab-page">
+        <div class="section-head glass"><div><h2>إدارة الموقع</h2><p>المشاكل والتكليفات والمتابعة</p></div></div>
+        <div class="content-grid two-cols">
+          <form class="glass form-card" id="siteForm">
+            <h3>إضافة متابعة موقع</h3>
+            <div class="form-grid">
+              <div class="field"><label>المشروع / الموقع</label><select name="project"></select></div>
+              <div class="field"><label>التصنيف</label><select name="category"><option>مشكلة</option><option>فقرة عمل</option><option>اتفاق</option><option>تكليف</option><option>مادة مطلوبة</option></select></div>
+              <div class="field"><label>الشخص المكلف</label><input name="assignedTo"></div>
+              <div class="field"><label>تاريخ الإنجاز</label><input name="dueDate" type="date"></div>
+              <div class="field full"><label>التفاصيل</label><textarea name="details" required></textarea></div>
+            </div>
+            <button class="primary-btn" type="submit"><i class="fa-solid fa-location-dot"></i> حفظ المتابعة</button>
+          </form>
+          <div class="glass table-card">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>#</th><th>المشروع</th><th>التصنيف</th><th>الشخص المكلف</th><th>تاريخ الإنجاز</th><th>التفاصيل</th><th>إجراء</th></tr></thead>
+                <tbody id="siteBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-workshops" class="tab-page">
+        <div class="section-head glass"><div><h2>الورش</h2><p>أعمال الورش والقبض والصرفيات</p></div></div>
+        <div class="content-grid two-cols">
+          <form class="glass form-card" id="workshopForm">
+            <h3>إضافة سجل ورشة</h3>
+            <div class="form-grid">
+              <div class="field"><label>اسم الورشة</label><input name="name" required></div>
+              <div class="field"><label>اليوم / التاريخ</label><input name="date" type="date"></div>
+              <div class="field"><label>النوع</label><select name="kind"><option>أعمال اليوم</option><option>سجل قبض</option><option>كوادر</option><option>صرفيات</option><option>ملاحظات</option><option>أعمال لاحقة</option></select></div>
+              <div class="field"><label>المبلغ</label><input name="amount" type="number" step="0.01"></div>
+              <div class="field full"><label>التفاصيل</label><textarea name="details" required></textarea></div>
+            </div>
+            <button class="primary-btn" type="submit"><i class="fa-solid fa-screwdriver-wrench"></i> حفظ السجل</button>
+          </form>
+          <div class="glass table-card">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>#</th><th>الورشة</th><th>النوع</th><th>التاريخ</th><th>المبلغ</th><th>التفاصيل</th><th>إجراء</th></tr></thead>
+                <tbody id="workshopsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-measurements" class="tab-page">
+        <div class="section-head glass"><div><h2>الذرعات</h2><p>تسجيل القياسات والأعمال المرتبطة بها</p></div></div>
+        <div class="content-grid two-cols">
+          <form class="glass form-card" id="measurementForm">
+            <h3>إضافة ذرعة</h3>
+            <div class="form-grid">
+              <div class="field"><label>اسم المشروع</label><select name="project"></select></div>
+              <div class="field"><label>موقع الذرعة</label><input name="location"></div>
+              <div class="field"><label>الطول</label><input name="length" type="number" step="0.01"></div>
+              <div class="field"><label>العرض</label><input name="width" type="number" step="0.01"></div>
+              <div class="field"><label>الارتفاع</label><input name="height" type="number" step="0.01"></div>
+              <div class="field"><label>المحيط</label><input name="perimeter" type="number" step="0.01"></div>
+              <div class="field"><label>المساحة</label><input name="area" type="number" step="0.01"></div>
+              <div class="field full"><label>الأعمال المرتبطة</label><input name="workTypes" placeholder="الأرضية، اللبخ، البورسلين..."></div>
+              <div class="field full"><label>ملاحظات عامة</label><textarea name="notes"></textarea></div>
+            </div>
+            <button class="primary-btn" type="submit"><i class="fa-solid fa-ruler-combined"></i> حفظ الذرعة</button>
+          </form>
+          <div class="glass table-card">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>#</th><th>المشروع</th><th>الموقع</th><th>الطول</th><th>العرض</th><th>المساحة</th><th>الأعمال</th><th>إجراء</th></tr></thead>
+                <tbody id="measurementsBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-report" class="tab-page">
+        <div class="section-head glass"><div><h2>التقارير</h2><p>ملخص عام للطباعة والمتابعة</p></div></div>
+        <div class="report-grid">
+          <article class="glass report-card">
+            <h3>ملخص المشاريع</h3>
+            <div id="reportProjects" class="report-lines"></div>
+          </article>
+          <article class="glass report-card">
+            <h3>ملخص الأعمال اليومية</h3>
+            <div id="reportDaily" class="report-lines"></div>
+          </article>
+          <article class="glass report-card">
+            <h3>ملخص المالية</h3>
+            <div id="reportFinance" class="report-lines"></div>
+          </article>
+          <article class="glass report-card">
+            <h3>ملخص المواد</h3>
+            <div id="reportMaterials" class="report-lines"></div>
+          </article>
+        </div>
+        <div class="glass print-box">
+          <button class="primary-btn" id="printBtn"><i class="fa-solid fa-print"></i> طباعة التقرير</button>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav glass">
+      <button class="nav-btn active" data-tab="home"><i class="fa-solid fa-house"></i><span>الرئيسية</span></button>
+      <button class="nav-btn" data-tab="projects"><i class="fa-solid fa-diagram-project"></i><span>المشاريع</span></button>
+      <button class="nav-btn" data-tab="daily"><i class="fa-solid fa-calendar-day"></i><span>الأعمال</span></button>
+      <button class="nav-btn" data-tab="attendance"><i class="fa-solid fa-users"></i><span>الحضور</span></button>
+      <button class="nav-btn" data-tab="finance"><i class="fa-solid fa-wallet"></i><span>المالية</span></button>
+      <button class="nav-btn" data-tab="materials"><i class="fa-solid fa-boxes-stacked"></i><span>المواد</span></button>
+      <button class="nav-btn" data-tab="site"><i class="fa-solid fa-map-location-dot"></i><span>الموقع</span></button>
+      <button class="nav-btn" data-tab="workshops"><i class="fa-solid fa-warehouse"></i><span>الورش</span></button>
+      <button class="nav-btn" data-tab="measurements"><i class="fa-solid fa-ruler"></i><span>الذرعات</span></button>
+      <button class="nav-btn" data-tab="report"><i class="fa-solid fa-file-lines"></i><span>التقارير</span></button>
+    </nav>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
